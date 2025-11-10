@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Rezzover Tier List</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#070608;
+    --bg2:#0f0f15;
+    --neon:#b974ff;
+    --neon-2:#7a2cff;
+    --card:#0b0b10;
+    --muted:#bdb5d9;
+    --dark:#08080b;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:"Poppins",system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;
+    background:linear-gradient(180deg,var(--bg1) 0%, #050306 100%);
+    color:#fff;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
+
+  header.appbar{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:20px;
+    padding:28px 16px 8px;
+    position:relative;
+  }
+  header.appbar .title{
+    font-size:34px;
+    font-weight:700;
+    color:var(--neon);
+    text-shadow:0 0 18px rgba(185,120,255,0.16), 0 0 28px rgba(122,44,255,0.08);
+    letter-spacing:0.4px;
+  }
+
+  /* right-side small controls */
+  .controls{
+    position:absolute;
+    right:18px;
+    top:18px;
+    display:flex;
+    gap:10px;
+    align-items:center;
+  }
+  .discord-btn{
+    background:transparent;
+    border:2px solid rgba(122,44,255,0.18);
+    color:#cfc3ff;
+    padding:8px 12px;
+    border-radius:12px;
+    font-weight:600;
+    text-decoration:none;
+    box-shadow:0 0 10px rgba(122,44,255,0.03);
+  }
+  .admin-btn{
+    background:transparent;
+    border:none;
+    color:rgba(255,255,255,0.0);
+    width:34px;
+    height:34px;
+    margin-left:8px;
+    cursor:pointer;
+    border-radius:8px;
+    /* subtle outline so owner can find it if needed */
+    box-shadow:0 0 0 1px rgba(122,44,255,0.06) inset;
+  }
+
+  /* categories tabs */
+  .tabs{
+    display:flex;
+    justify-content:center;
+    gap:12px;
+    flex-wrap:wrap;
+    padding:18px 16px 6px;
+  }
+  .tab{
+    background:transparent;
+    border:2px solid rgba(122,44,255,0.15);
+    color:#eae0ff;
+    padding:8px 14px;
+    border-radius:12px;
+    cursor:pointer;
+    font-weight:600;
+  }
+  .tab.active{
+    background:linear-gradient(90deg, rgba(186,120,255,0.12), rgba(122,44,255,0.08));
+    border-color:var(--neon);
+    box-shadow:0 6px 18px rgba(122,44,255,0.12);
+    color:#fff;
+  }
+
+  .container{
+    width:95%;
+    max-width:1100px;
+    margin:18px auto 140px;
+  }
+  .search{
+    display:flex;
+    justify-content:center;
+    margin:14px 0 22px;
+  }
+  .search input{
+    width:100%;
+    max-width:720px;
+    background:transparent;
+    border:2px solid rgba(122,44,255,0.12);
+    padding:12px 14px;
+    border-radius:10px;
+    color:#eae0ff;
+    outline:none;
+  }
+  .search input::placeholder{color:#a99ddb}
+
+  /* player row */
+  .player-row{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    background:linear-gradient(180deg, rgba(18,12,25,0.6), rgba(8,6,12,0.55));
+    border-radius:14px;
+    border:2px solid rgba(122,44,255,0.12);
+    padding:14px;
+    margin-bottom:14px;
+    box-shadow:0 6px 18px rgba(122,44,255,0.06);
+  }
+  .rank{
+    width:56px;
+    text-align:center;
+    font-weight:700;
+    color:var(--neon);
+    font-size:20px;
+  }
+  .avatar{
+    width:64px;height:64px;border-radius:10px;object-fit:cover;border:2px solid var(--neon);
+    box-shadow:0 6px 16px rgba(122,44,255,0.08);
+  }
+  .meta{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+  }
+  .name{
+    font-weight:700;
+    font-size:18px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .level-badge{
+    background:rgba(18,14,26,0.7);
+    border:1px solid rgba(122,44,255,0.14);
+    padding:4px 8px;border-radius:8px;color:#d9c9ff;font-weight:700;font-size:13px;
+  }
+  .sub{
+    color:#bfb3e8;font-size:14px;margin-top:6px;
+  }
+
+  /* highlight top 3 */
+  .rank.rank-1{ color:#ffd76a }
+  .rank.rank-2{ color:#cfcfcf }
+  .rank.rank-3{ color:#c5845a }
+
+  /* footer */
+  footer.bottom{
+    position:fixed;left:0;right:0;bottom:0;padding:12px 6px;background:linear-gradient(180deg, rgba(6,4,8,0.6), rgba(4,3,5,0.9));
+    display:flex;justify-content:center;gap:12px;align-items:center;
+  }
+  footer a{color:#e8ddff;text-decoration:none;font-weight:600}
+
+  /* admin panel modal */
+  .modal-backdrop{
+    position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;padding:20px;
+  }
+  .modal{
+    width:100%;max-width:720px;background:linear-gradient(180deg, #0b0710, #0c0712);border-radius:12px;padding:18px;border:2px solid rgba(122,44,255,0.12);
+  }
+  .modal h3{margin:0 0 12px;color:#dfcffe}
+  .row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+  .row input[type="text"], .row select, .row input[type="file"], .row input[type="search"]{
+    flex:1;padding:10px;border-radius:8px;border:1px solid rgba(122,44,255,0.12);background:transparent;color:#efe6ff;
+  }
+  .modal .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+  .btn{background:linear-gradient(90deg,#b974ff,#7a2cff);border:none;color:#fff;padding:10px 14px;border-radius:8px;cursor:pointer;font-weight:700}
+  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06)}
+
+  @media (max-width:700px){
+    header.appbar .title{font-size:22px}
+    .rank{width:44px;font-size:16px}
+    .avatar{width:48px;height:48px}
+    .container{margin-bottom:180px}
+  }
+</style>
+</head>
+<body>
+<header class="appbar">
+  <div class="title">Rezzover Tier List</div>
+  <div class="controls">
+    <a class="discord-btn" href="https://discord.gg/rRfWXnXaU3" target="_blank">Discord</a>
+    <!-- Admin trigger: visible but subtle -->
+    <button class="admin-btn" id="adminTrigger" title="Admin"></button>
+  </div>
+</header>
+
+<div class="tabs" id="tabs"></div>
+
+<div class="container">
+  <div class="search"><input id="searchInput" type="search" placeholder="Buscar jugador..."></div>
+  <div id="listArea"></div>
+</div>
+
+<footer class="bottom">
+  <a href="https://discord.gg/rRfWXnXaU3" target="_blank">Discord</a>
+  <a href="#" id="openAdminFooter">Admin</a>
+</footer>
+
+<!-- admin modal -->
+<div class="modal-backdrop" id="modalBackdrop" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true">
+    <h3>Panel de Administración</h3>
+
+    <div style="margin-bottom:8px">
+      <input id="adminPassword" type="password" placeholder="🔒 Ingresá la clave Rezzover" />
+      <button class="btn" id="adminPassBtn">Entrar</button>
+    </div>
+
+    <div id="adminControls" style="display:none">
+      <div class="row">
+        <input type="text" id="pName" placeholder="Nombre (único)">
+        <input type="text" id="pImgUrl" placeholder="URL de la imagen (o dejar vacío si subes)">
+      </div>
+      <div class="row">
+        <input type="file" id="pImgFile" accept="image/*">
+        <select id="pLevel">
+          <option>HT1</option><option>L1</option><option>HT2</option><option>LT2</option>
+          <option>HT3</option><option>LT3</option><option>HT4</option><option>LT4</option>
+          <option>HT5</option><option>LT5</option>
+        </select>
+        <select id="pCategory"></select>
+      </div>
+
+      <div class="row">
+        <button class="btn" id="addBtn">Agregar</button>
+        <button class="btn ghost" id="updateBtn">Actualizar</button>
+        <button class="btn ghost" id="deleteBtn">Eliminar</button>
+        <button class="btn ghost" id="closeAdmin">Cerrar</button>
+      </div>
+
+      <div style="margin-top:10px">
+        <input type="search" id="adminSearch" placeholder="Buscar en admin...">
+        <div id="adminList" style="max-height:220px;overflow:auto;margin-top:8px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* Data model in localStorage: array of players
+{ name, img, level, category }
+*/
+const CATS = ["General","Sword","CPVP","UHC","Nethpot","SMP","Axe","Mace"];
+const STORAGE_KEY = "rezzover_players_v2";
+
+let players = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+let currentCat = "General";
+
+/* UI refs */
+const tabsEl = document.getElementById("tabs");
+const listArea = document.getElementById("listArea");
+const searchInput = document.getElementById("searchInput");
+
+/* build tabs */
+CATS.forEach(cat=>{
+  const b = document.createElement("button");
+  b.className = "tab" + (cat===currentCat? " active":"");
+  b.textContent = cat;
+  b.addEventListener("click", ()=>{
+    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+    b.classList.add("active");
+    currentCat = cat;
+    renderList();
+    // fade-in effect
+    listArea.style.opacity = 0;
+    setTimeout(()=>listArea.style.opacity = 1, 80);
+  });
+  tabsEl.appendChild(b);
+});
+
+/* render players for current category */
+function renderList(){
+  listArea.innerHTML = "";
+  const filtered = players.filter(p=>p.category===currentCat && p.name.toLowerCase().includes(searchInput.value.toLowerCase()));
+  filtered.forEach((p,i)=>{
+    const row = document.createElement("div");
+    row.className = "player-row";
+    const rankClass = (i===0?"rank rank-1": (i===1?"rank rank-2": (i===2?"rank rank-3":"rank")));
+    row.innerHTML = `
+      <div class="${rankClass}">#${i+1}</div>
+      <img class="avatar" src="${p.img}" onerror="this.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABgElEQVR4nO3aMQ6CQBRE0fZgJbqkQF7o0rGQO5gG3cQq6kHP4t3n10qXb8zZ+6m7n+Xr2bB0g3k8Q6wDvgN+gC9gH3gE9wF3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wG3gF9wGz4H9xV4g6zjZYgAAAABJRU5ErkJggg=='">
+      <div class="meta">
+        <div class="name">${p.name} <span class="level-badge">${p.level}</span></div>
+        <div class="sub">${p.category}</div>
+      </div>
+    `;
+    listArea.appendChild(row);
+  });
+}
+
+/* search */
+searchInput.addEventListener("input", renderList);
+
+/* admin modal logic with password */
+const modalBackdrop = document.getElementById("modalBackdrop");
+const adminTrigger = document.getElementById("adminTrigger");
+const openAdminFooter = document.getElementById("openAdminFooter");
+const adminPassword = document.getElementById("adminPassword");
+const adminPassBtn = document.getElementById("adminPassBtn");
+const adminControls = document.getElementById("adminControls");
+
+/* admin elements */
+const pName = document.getElementById("pName");
+const pImgUrl = document.getElementById("pImgUrl");
+const pImgFile = document.getElementById("pImgFile");
+const pLevel = document.getElementById("pLevel");
+const pCategory = document.getElementById("pCategory");
+const addBtn = document.getElementById("addBtn");
+const updateBtn = document.getElementById("updateBtn");
+const deleteBtn = document.getElementById("deleteBtn");
+const closeAdmin = document.getElementById("closeAdmin");
+const adminList = document.getElementById("adminList");
+const adminSearch = document.getElementById("adminSearch");
+
+/* fill category select */
+CATS.forEach(c=> {
+  const opt = document.createElement("option");
+  opt.value = c; opt.textContent = c;
+  pCategory.appendChild(opt);
+});
+
+/* show modal with prompt -> password check */
+function showModal(){
+  modalBackdrop.style.display = "flex";
+  adminPassword.value = "";
+  adminControls.style.display = "none";
+}
+function hideModal(){
+  modalBackdrop.style.display = "none";
+}
+adminTrigger.addEventListener("click", showModal);
+openAdminFooter.addEventListener("click", (e)=>{ e.preventDefault(); showModal(); });
+
+adminPassBtn.addEventListener("click", ()=>{
+  const val = adminPassword.value;
+  if(val === "XD1337"){
+    adminControls.style.display = "block";
+    adminPassword.style.display = "none";
+    adminPassBtn.style.display = "none";
+    renderAdminList();
+  } else {
+    if(val !== "") alert("Contraseña incorrecta");
+  }
+});
+closeAdmin.addEventListener("click", hideModal);
+
+/* adding player (supports file or url) */
+addBtn.addEventListener("click", ()=>{
+  const name = pName.value.trim();
+  const lvl = pLevel.value;
+  const cat = pCategory.value;
+  if(!name) return alert("Nombre requerido");
+  if(pImgFile.files && pImgFile.files[0]){
+    const fr = new FileReader();
+    fr.onload = e=>{
+      players.push({name, img: e.target.result, level: lvl, category: cat});
+      saveAndRefresh();
+      clearAdminInputs();
+    };
+    fr.readAsDataURL(pImgFile.files[0]);
+  } else {
+    const url = pImgUrl.value.trim() || placeholderImg();
+    players.push({name, img: url, level: lvl, category: cat});
+    saveAndRefresh();
+    clearAdminInputs();
+  }
+});
+
+/* update / delete */
+let selectedIndex = -1;
+updateBtn.addEventListener("click", ()=>{
+  if(selectedIndex<0) return alert("Seleccioná un jugador en la lista de admin");
+  const name = pName.value.trim();
+  const lvl = pLevel.value;
+  const cat = pCategory.value;
+  if(!name) return alert("Nombre requerido");
+  if(pImgFile.files && pImgFile.files[0]){
+    const fr = new FileReader();
+    fr.onload = e=>{
+      players[selectedIndex] = {name, img: e.target.result, level: lvl, category: cat};
+      saveAndRefresh();
+      clearAdminInputs();
+    };
+    fr.readAsDataURL(pImgFile.files[0]);
+  } else {
+    const url = pImgUrl.value.trim() || players[selectedIndex].img || placeholderImg();
+    players[selectedIndex] = {name, img: url, level: lvl, category: cat};
+    saveAndRefresh();
+    clearAdminInputs();
+  }
+});
+deleteBtn.addEventListener("click", ()=>{
+  if(selectedIndex<0) return alert("Seleccioná un jugador");
+  if(!confirm("Eliminar jugador seleccionado?")) return;
+  players.splice(selectedIndex,1);
+  saveAndRefresh();
+  clearAdminInputs();
+});
+
+/* admin list rendering & selection */
+function renderAdminList(){
+  adminList.innerHTML = "";
+  const term = (adminSearch?.value || "").toLowerCase();
+  players.forEach((p,i)=>{
+    if(term && !p.name.toLowerCase().includes(term)) return;
+    const row = document.createElement("div");
+    row.style.display="flex"; row.style.justifyContent="space-between"; row.style.alignItems="center";
+    row.style.padding="6px 4px"; row.style.borderBottom="1px dashed rgba(255,255,255,0.03)";
+    const left = document.createElement("div");
+    left.innerHTML = `<strong>${p.name}</strong> <span style="color:#c9b9ff">(${p.category})</span>`;
+    const btns = document.createElement("div");
+    const sel = document.createElement("button"); sel.textContent="Seleccionar"; sel.className="btn ghost";
+    sel.onclick = ()=>{ selectedIndex = i; pName.value=p.name; pImgUrl.value=""; pLevel.value=p.level; pCategory.value=p.category; adminList.querySelectorAll('button').forEach(b=>b.disabled=false); sel.disabled=true; };
+    btns.appendChild(sel);
+    row.appendChild(left); row.appendChild(btns);
+    adminList.appendChild(row);
+  });
+}
+
+/* helper functions */
+function saveAndRefresh(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(players));
+  renderList();
+  renderAdminList();
+}
+function clearAdminInputs(){
+  pName.value=""; pImgUrl.value=""; pImgFile.value=""; selectedIndex=-1;
+  adminList.querySelectorAll('button').forEach(b=>b.disabled=false);
+}
+function placeholderImg(){
+  return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="#17111a"/><text x="50%" y="50%" fill="#bba6ff" dominant-baseline="middle" text-anchor="middle" font-size="12">No image</text></svg>');
+}
+
+/* admin search */
+adminSearch?.addEventListener("input", renderAdminList);
+
+/* initial render */
+renderList();
+
+/* expose some helpers for debugging in console if needed */
+window._rezzover = { players, saveAndRefresh };
+
+/* simple keyboard shortcut: Ctrl+Shift+A also opens admin modal */
+document.addEventListener("keydown", (e)=>{
+  if(e.ctrlKey && e.shiftKey && e.key.toLowerCase()==='a') showModal();
+});
+
+/* small helpers to open modal (showModal/hideModal were defined above) */
+function showModal(){ modalBackdrop.style.display = "flex"; adminPassword.value = ""; adminControls.style.display = "none"; }
+function hideModal(){ modalBackdrop.style.display = "none"; }
+</script>
+</body>
+</html>
